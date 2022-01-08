@@ -7,7 +7,7 @@ interface PaginationProps {
     totalCountOfRegisters: number;
     registersPerPage?: number;
     currentPage?: number;
-    onPageChange?: (page: number) => void;
+    onPageChange: (page: number) => void;
 }
 
 const siblingsCount = 1;
@@ -58,27 +58,49 @@ export function Pagination({
             <Stack direction="row" spacing="2">
                 {currentPage > 1 + siblingsCount && (
                     <>
-                        <PaginationItem number={1} />
-                        {currentPage > siblingsCount + 2 && <PaginationSepator />}
+                        <PaginationItem
+                            number={1}
+                            onPageChange={onPageChange}
+                        />
+                        {currentPage > siblingsCount + 2 && (
+                            <PaginationSepator />
+                        )}
                     </>
                 )}
 
                 {previousPages.length > 0 &&
                     previousPages.map((page) => (
-                        <PaginationItem key={page} number={page} />
+                        <PaginationItem
+                            key={page}
+                            number={page}
+                            onPageChange={onPageChange}
+                        />
                     ))}
 
-                <PaginationItem number={currentPage} isCurrent />
+                <PaginationItem
+                    number={currentPage}
+                    isCurrent
+                    onPageChange={onPageChange}
+                />
 
                 {nextPages.length > 0 &&
                     nextPages.map((page) => (
-                        <PaginationItem key={page} number={page} />
+                        <PaginationItem
+                            key={page}
+                            number={page}
+                            onPageChange={onPageChange}
+                        />
                     ))}
 
                 {currentPage + siblingsCount < lastPage && (
                     <>
-                        {currentPage + siblingsCount + 1 < lastPage && <PaginationSepator />}
-                        <PaginationItem number={lastPage} />
+                        {currentPage + siblingsCount + 1 < lastPage && (
+                            <PaginationSepator />
+                        )}
+                        <PaginationItem
+                            number={lastPage}
+                            onPageChange={onPageChange}
+                        />
                     </>
                 )}
             </Stack>
