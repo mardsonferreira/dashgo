@@ -19,11 +19,12 @@ import {
 import { RiAddLine, RiPencilLine } from "react-icons/ri";
 import NextLink from "next/link";
 import { useState } from "react";
+import { GetServerSideProps } from "next";
 
 import { Header } from "../../components/Header";
 import { Sidebar } from "../../components/Sidebar";
 import { Pagination } from "../../components/Pagination";
-import { useUsers } from "../../services/hooks/useUsers";
+import { getUsers, useUsers } from "../../services/hooks/useUsers";
 import { queryClient } from "../../services/QueryClient";
 import { api } from "../../services/api";
 
@@ -37,13 +38,17 @@ export default function UserList() {
     });
 
     async function handlePrefetchUser(userId: string) {
-        await queryClient.prefetchQuery(["user", userId], async () => {
-            const response = await api.get(`users/${userId}`);
+        await queryClient.prefetchQuery(
+            ["user", userId],
+            async () => {
+                const response = await api.get(`users/${userId}`);
 
-            return response.data;
-        }, {
-            staleTime: 1000 * 60 * 10
-        })
+                return response.data;
+            },
+            {
+                staleTime: 1000 * 60 * 10,
+            }
+        );
     }
 
     return (
@@ -113,7 +118,11 @@ export default function UserList() {
                                                     <Link
                                                         color="purple.400"
                                                         fontWeight="bold"
-                                                        onMouseEnter={() => handlePrefetchUser(user.id)}
+                                                        onMouseEnter={() =>
+                                                            handlePrefetchUser(
+                                                                user.id
+                                                            )
+                                                        }
                                                     >
                                                         {user.name}
                                                     </Link>
@@ -161,3 +170,14 @@ export default function UserList() {
         </Box>
     );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+    const { users, totalCount } = await getUsers(1);
+
+    return {
+        props: {
+            users,
+            totalCount,
+        },
+    };
+};
